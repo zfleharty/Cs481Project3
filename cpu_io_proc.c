@@ -32,29 +32,26 @@ int main(int argc, char* argv[]){
 }
 
 void collectFilesIntoQue(){
-  struct dir_que que = initialize_que("/nfs/student/z/zfleharty/");
-  struct dir_node current_dir = pop(que); 
+  struct dir_que que = initialize_que();
+  push(&que,"/");
+  struct dir_node current_dir = pop(&que);
+  printf("%s\n",current_dir.Path);
   struct dirent *dp; 
   int new_iteration = 0;
   do{
     
-    if(new_iteration)
-      { //Process the next directory if not on first iteration of loop
-    	struct dir_node *temp = &current_dir;
-    	current_dir = *current_dir.nextDirectory;
-    	free(temp);
-      }
     
     new_iteration = 1;
-    DIR *dir = opendir(current_dir.Path);    
+    DIR *dir = opendir(current_dir.Path);
     while(dp=readdir(dir))
       {
+
 	//TODO: check for null pointer of dp, indicates error occured
 	processFileDir(dp,current_dir.Path,que);
       }
     
     closedir(dir);
-  }while(current_dir.nextDirectory != NULL);
+  }while(not_empty(que));
   
 
 }
